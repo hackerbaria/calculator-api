@@ -3,11 +3,8 @@ package com.cartoncloud.assignment.calculatorapi.calculatorapi.service;
 import com.cartoncloud.assignment.calculatorapi.calculatorapi.client.PurchaseOrdersService;
 import com.cartoncloud.assignment.calculatorapi.calculatorapi.model.ProductGroupTotal;
 import com.cartoncloud.assignment.calculatorapi.calculatorapi.model.PurchaseOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
