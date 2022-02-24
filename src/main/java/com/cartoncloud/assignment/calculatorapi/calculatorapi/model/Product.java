@@ -4,6 +4,7 @@ package com.cartoncloud.assignment.calculatorapi.calculatorapi.model;
 import com.fasterxml.jackson.annotation.*;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,9 +69,9 @@ public class Product {
     @JsonProperty("per_item_storage_charge")
     private String perItemStorageCharge;
     @JsonProperty("volume")
-    private String volume;
+    private BigDecimal volume;
     @JsonProperty("weight")
-    private String weight;
+    private BigDecimal weight;
     @JsonProperty("allow_zero_storage_charge")
     private String allowZeroStorageCharge;
     @JsonProperty("custom_field_4")

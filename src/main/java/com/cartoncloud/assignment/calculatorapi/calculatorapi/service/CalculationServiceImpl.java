@@ -1,13 +1,13 @@
 package com.cartoncloud.assignment.calculatorapi.calculatorapi.service;
 
-import com.cartoncloud.assignment.calculatorapi.calculatorapi.common.ProductType;
-import com.cartoncloud.assignment.calculatorapi.calculatorapi.model.Product;
+import com.cartoncloud.assignment.calculatorapi.calculatorapi.formular.FormulaCalculation;
 import com.cartoncloud.assignment.calculatorapi.calculatorapi.model.ProductGroupTotal;
 import com.cartoncloud.assignment.calculatorapi.calculatorapi.model.PurchaseOrder;
-import com.cartoncloud.assignment.calculatorapi.calculatorapi.model.PurchaseOrderProduct;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,59 +15,37 @@ import java.util.Map;
 
 @Service
 public class CalculationServiceImpl implements CalculationService{
+
+    private FormulaCalculation formulaCalculation;
+
+    public CalculationServiceImpl(@Qualifier("firstFormulaCalculation") FormulaCalculation formulaCalculation) {
+        this.formulaCalculation = formulaCalculation;
+    }
+
+
     @Override
     public List<ProductGroupTotal> calculateProductTotal(List<PurchaseOrder> orderLists) {
         var productGroupTotal = new HashMap<Integer, BigDecimal>();
-        for (PurchaseOrder order : orderLists) {
-            List<PurchaseOrderProduct> poProductLst = order.getData().getPurchaseOrderProduct();
-            for (PurchaseOrderProduct product : poProductLst) {
-                var productTotal = performFormulaBasedCalculation(product);
-                var productId = Integer.parseInt(product.getProductTypeId());
-                if (productGroupTotal.containsKey(productId)) {
-                    productGroupTotal.put(productId, productGroupTotal.get(productId).add(productTotal));
-                }
-                else {
-                    productGroupTotal.put(productId, productTotal);
-                }
-
-            }
+        for (PurchaseOrder e : orderLists) {
+            e.getData().getPurchaseOrderProduct()
+                    .forEach(c -> {
+                        var productTotal = formulaCalculation.performFormulaBasedCalculation(c);
+                        var productId = Integer.parseInt(c.getProductTypeId());
+                        if (productGroupTotal.containsKey(productId)) {
+                            productGroupTotal.put(productId, productGroupTotal.get(productId).add(productTotal));
+                        } else {
+                            productGroupTotal.put(productId, productTotal);
+                        }
+                    });
         }
 
         var productGroupTotalLst = new ArrayList<ProductGroupTotal>();
 
         for (Map.Entry<Integer, BigDecimal> entry : productGroupTotal.entrySet()) {
-            productGroupTotalLst.add(new ProductGroupTotal(entry.getKey(), entry.getValue()));
+            productGroupTotalLst.add(new ProductGroupTotal(entry.getKey(), entry.getValue().setScale(1, RoundingMode.HALF_UP)));
         }
         return productGroupTotalLst;
     }
 
-    private BigDecimal performFormulaBasedCalculation(PurchaseOrderProduct poProduct) {
-        var orderTotal = BigDecimal.ZERO;
-        if (ProductType.TYPE1.getId().equals(poProduct.getProductTypeId())) {
-            //by weight
-            orderTotal = getUnitQuanity(poProduct).multiply(getProductWeight(poProduct.getProduct()));
 
-        }
-        else if (ProductType.TYPE2.getId().equals(poProduct.getProductTypeId())) {
-            //By volume
-            orderTotal = getUnitQuanity(poProduct).multiply(getProductVolume(poProduct.getProduct()));
-        }
-        else if (ProductType.TYPE3.getId().equals(poProduct.getProductTypeId())) {
-            //by weight
-            orderTotal = getUnitQuanity(poProduct).multiply(getProductWeight(poProduct.getProduct()));
-        }
-        return orderTotal;
-    }
-
-    public BigDecimal getProductWeight(Product product) {
-        return new BigDecimal(product.getWeight());
-    }
-
-    public BigDecimal getProductVolume(Product product) {
-        return new BigDecimal(product.getVolume());
-    }
-
-    public BigDecimal getUnitQuanity(PurchaseOrderProduct poProduct) {
-        return new BigDecimal(poProduct.getUnitQuantityInitial());
-    }
 }

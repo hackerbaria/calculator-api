@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,7 +25,7 @@ public class PurchaseOrderProduct {
     @JsonProperty("unit_quantity_confirmed")
     private Object unitQuantityConfirmed;
     @JsonProperty("unit_quantity_initial")
-    private String unitQuantityInitial;
+    private BigDecimal unitQuantityInitial;
     @JsonProperty("unit_quantity_onhand")
     private String unitQuantityOnhand;
     @JsonProperty("unit_quantity_free")

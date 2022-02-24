@@ -7,7 +7,10 @@ import org.springframework.http.*;
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
 
 import java.util.*;
 
@@ -16,54 +19,37 @@ import java.util.*;
 public class PurchaseOrdersServiceImpl implements  PurchaseOrdersService{
 
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-
-
     @Override
     public List<PurchaseOrder> getOrderDetails(List<Integer> orderIds) {
-        String url = "https://api.cartoncloud.com.au/CartonCloud_Demo/PurchaseOrders/{id}";
+        String CARTON_API_BASE_URL = "https://api.cartoncloud.com.au/CartonCloud_Demo/PurchaseOrders/{id}";
         List<PurchaseOrder> orderList = new ArrayList<>();
-        restTemplate.getInterceptors()
-                .add(new BasicAuthorizationInterceptor("interview-test@cartoncloud.com.au", "test123456"));
-        for (Integer orderId : orderIds) {
 
-            // URI (URL) parameters
+        for (Integer orderId : orderIds) {
             Map<String, Integer> uriParams = new HashMap<>();
             uriParams.put("id", orderId);
 
             // Query parameters
-            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
+            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(CARTON_API_BASE_URL)
                     // Add query parameter
                     .queryParam("version", "5").queryParam("associated", "true");
             String uri = builder.buildAndExpand(uriParams).toUri().toString();
 
-            HttpHeaders headers = setHeaders();
-            HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-            System.out.println(uri);
+            WebClient webClient = WebClient.builder()
+                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString())
+                    .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString())
+                    .baseUrl(uri)
+                             .filter(ExchangeFilterFunctions
+                            .basicAuthentication("interview-test@cartoncloud.com.au"
+                                    , "test123456"))
+                    .build();
 
-            ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            Flux<PurchaseOrder> purchaseOrder = webClient.get()
+                    .retrieve()
+                    .bodyToFlux(PurchaseOrder.class);
 
-            ObjectMapper mapper = new ObjectMapper();
-
-            try {
-                // Convert JSON string to Object
-                var purchaseOrder = mapper.readValue(result.getBody(), PurchaseOrder.class);
-                orderList.add(purchaseOrder);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            orderList.add(purchaseOrder.blockFirst());
         }
 
         return orderList;
-    }
-
-    private HttpHeaders setHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
     }
 }
