@@ -3,22 +3,22 @@ package com.cartoncloud.assignment.calculatorapi.calculatorapi.common;
 public enum ProductType {
     TYPE1("1", CalculationMethod.WEIGHT), TYPE2("2",CalculationMethod.VOLUME), TYPE3("3", CalculationMethod.WEIGHT);
 
-    private String mId;
-    private CalculationMethod mCalculationMethod;
+    private String id;
+    private CalculationMethod calculationMethod;
 
     ProductType(String id, CalculationMethod calMethod) {
-        mId = id;
-        mCalculationMethod = calMethod;
+        this.id = id;
+        calculationMethod = calMethod;
     }
 
 
     public String getId() {
-        return mId;
+        return id;
     }
 
 
     public CalculationMethod getCalculationMethod() {
-        return mCalculationMethod;
+        return calculationMethod;
     }
 
 }

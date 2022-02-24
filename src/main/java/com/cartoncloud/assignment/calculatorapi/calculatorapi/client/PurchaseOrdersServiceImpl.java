@@ -40,17 +40,16 @@ public class PurchaseOrdersServiceImpl implements  PurchaseOrdersService{
             String uri = builder.buildAndExpand(uriParams).toUri().toString();
 
             HttpHeaders headers = setHeaders();
-            HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+            HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
             System.out.println(uri);
 
             ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 
             ObjectMapper mapper = new ObjectMapper();
-            PurchaseOrder purchaseOrder = null;
 
             try {
                 // Convert JSON string to Object
-                purchaseOrder = mapper.readValue(result.getBody(), PurchaseOrder.class);
+                var purchaseOrder = mapper.readValue(result.getBody(), PurchaseOrder.class);
                 orderList.add(purchaseOrder);
 
             } catch (Exception e) {

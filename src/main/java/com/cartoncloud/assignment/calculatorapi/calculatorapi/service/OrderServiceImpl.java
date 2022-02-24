@@ -2,7 +2,6 @@ package com.cartoncloud.assignment.calculatorapi.calculatorapi.service;
 
 import com.cartoncloud.assignment.calculatorapi.calculatorapi.client.PurchaseOrdersService;
 import com.cartoncloud.assignment.calculatorapi.calculatorapi.model.ProductGroupTotal;
-import com.cartoncloud.assignment.calculatorapi.calculatorapi.model.PurchaseOrder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class OrderServiceImpl implements  OrderService {
     @Override
     public List<ProductGroupTotal> calculateOrderTotal(List<Integer> orderIds) {
 
-        List<PurchaseOrder> purchaseOrderList = purchaseOrdersService.getOrderDetails(orderIds);
+        var purchaseOrderList = purchaseOrdersService.getOrderDetails(orderIds);
 
         return calculationService.calculateProductTotal(purchaseOrderList);
 

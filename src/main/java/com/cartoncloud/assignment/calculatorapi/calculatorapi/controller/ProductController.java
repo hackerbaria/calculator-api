@@ -25,9 +25,9 @@ public class ProductController {
     @PostMapping("/test")
     public ResponseEntity<List<ProductGroupTotal>> calculateOrderTotal(
             @RequestBody PurchaseOrderRequest request) {
-        List<Integer> orderIds = request.getPurchaseOrderIds();
+        var orderIds = request.getPurchaseOrderIds();
 
-        List<ProductGroupTotal> orderGroupTotal = orderService.calculateOrderTotal(orderIds);
+        var orderGroupTotal = orderService.calculateOrderTotal(orderIds);
         return new ResponseEntity<>(orderGroupTotal, HttpStatus.OK);
     }
 

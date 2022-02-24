@@ -17,12 +17,12 @@ import java.util.Map;
 public class CalculationServiceImpl implements CalculationService{
     @Override
     public List<ProductGroupTotal> calculateProductTotal(List<PurchaseOrder> orderLists) {
-        Map<Integer, BigDecimal> productGroupTotal = new HashMap<>();
+        var productGroupTotal = new HashMap<Integer, BigDecimal>();
         for (PurchaseOrder order : orderLists) {
             List<PurchaseOrderProduct> poProductLst = order.getData().getPurchaseOrderProduct();
             for (PurchaseOrderProduct product : poProductLst) {
-                BigDecimal productTotal = performFormulaBasedCalculation(product);
-                Integer productId = Integer.parseInt(product.getProductTypeId());
+                var productTotal = performFormulaBasedCalculation(product);
+                var productId = Integer.parseInt(product.getProductTypeId());
                 if (productGroupTotal.containsKey(productId)) {
                     productGroupTotal.put(productId, productGroupTotal.get(productId).add(productTotal));
                 }
@@ -33,7 +33,7 @@ public class CalculationServiceImpl implements CalculationService{
             }
         }
 
-        List<ProductGroupTotal> productGroupTotalLst = new ArrayList<>();
+        var productGroupTotalLst = new ArrayList<ProductGroupTotal>();
 
         for (Map.Entry<Integer, BigDecimal> entry : productGroupTotal.entrySet()) {
             productGroupTotalLst.add(new ProductGroupTotal(entry.getKey(), entry.getValue()));
@@ -42,7 +42,7 @@ public class CalculationServiceImpl implements CalculationService{
     }
 
     private BigDecimal performFormulaBasedCalculation(PurchaseOrderProduct poProduct) {
-        BigDecimal orderTotal = BigDecimal.ZERO;
+        var orderTotal = BigDecimal.ZERO;
         if (ProductType.TYPE1.getId().equals(poProduct.getProductTypeId())) {
             //by weight
             orderTotal = getUnitQuanity(poProduct).multiply(getProductWeight(poProduct.getProduct()));
