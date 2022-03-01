@@ -42,7 +42,8 @@ public class CalculationServiceImpl implements CalculationService{
         var productGroupTotalLst = new ArrayList<ProductGroupTotal>();
 
         for (Map.Entry<Integer, BigDecimal> entry : productGroupTotal.entrySet()) {
-            productGroupTotalLst.add(new ProductGroupTotal(entry.getKey(), entry.getValue().setScale(1, RoundingMode.HALF_UP)));
+            productGroupTotalLst.add(new ProductGroupTotal(entry.getKey(),
+                    entry.getValue().setScale(1, RoundingMode.HALF_UP)));
         }
         return productGroupTotalLst;
     }
